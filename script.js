@@ -215,6 +215,8 @@ function handleController( controller, dt ){
     if(controller === controller1){
       if(!shot){
         scene.add(bullet);
+        let pos = controllerGrip1.getWorldPosition(new THREE.Vector3());
+        bullet.position.add(pos);
         bullet.quaternion.copy(controllerGrip1.getWorldQuaternion(new THREE.Quaternion))
         bullets.unshift(bullet);
         shot = true;
