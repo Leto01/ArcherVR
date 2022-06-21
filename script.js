@@ -218,6 +218,7 @@ function handleController( controller, dt ){
         let pos = controllerGrip1.getWorldPosition(new THREE.Vector3());
         bullet.position.add(pos);
         bullet.quaternion.copy(controllerGrip1.getWorldQuaternion(new THREE.Quaternion))
+        bullet.rotateX(-45);
         bullets.unshift(bullet);
         shot = true;
         //test
