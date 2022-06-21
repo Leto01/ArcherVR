@@ -102,7 +102,8 @@ hayBale3.castShadow = true;
 hayBale4.castShadow = true;
 hayBale5.castShadow = true;
 
-const collidableObjects = []
+const collidableObjects = [];
+const shootables = [];
 
 export function addWorldIntoScene (scene){
     //for adding in the BOW-Model
@@ -139,8 +140,18 @@ export function addWorldIntoScene (scene){
     collidableObjects.push(wall2);
     collidableObjects.push(wall3);
     collidableObjects.push(wall4);
+
+    shootables.push(hayBale1);
+    shootables.push(hayBale2);
+    shootables.push(hayBale3);
+    shootables.push(hayBale4);
+    shootables.push(hayBale5);
 }
 
 export function getCollidables(){
   return collidableObjects;
+}
+
+export function getShootables(){
+  return shootables;
 }

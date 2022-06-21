@@ -1,8 +1,9 @@
 import * as THREE from 'three';
-import { addWorldIntoScene, getCollidables } from './buildWorld.js';
+import { addWorldIntoScene, getCollidables, getShootables } from './buildWorld.js';
 import { VRButton } from 'VRButton';
 import { XRControllerModelFactory } from 'XRControllerModelFactory';
 import { OrbitControls } from 'OrbitControls';
+import { Vector3 } from 'three';
 
 //scene design vars: -------------------------x
 const widthofRange = 50; //Shootingrange size 
@@ -114,6 +115,7 @@ const collidables = getCollidables();
 function animate() {
   renderer.setAnimationLoop( render );
 }
+animate();
 
 function render() {
   const dt = clock.getDelta();
@@ -122,30 +124,52 @@ function render() {
   updateBullets(dt);
   renderer.render( scene, camera );
 }
-
-  // Animate activate only if movement is in the scene
-  animate();
+//Func for repos the hayBales
+function newPosOnRange(){
+  let x = (Math.random()*48)-24;
+  let z = (Math.random()*98)-49;
+  let y = 0;
+  return new Vector3(x, y, z);
+}
 
 //___________PROJECTILE ARRAY FOR SHOOTING___________
 let bullets = [];
 const bulletGeom = new THREE.SphereGeometry( .2, 32, 16 );
-const bulletMat = new THREE.MeshPhongMaterial( { color: Math.random()*0xffffff } );
-let bullet = new THREE.Mesh( bulletGeom, bulletMat );
+let bullet = new THREE.Mesh( bulletGeom,  new THREE.MeshPhongMaterial( { color: Math.random()*0xffffff } ) );
 let shot = true;
+
+const bulletRay = new THREE.Raycaster();
 
 function updateBullets(dt){
   const flyspeed = 30;
   let zer = new THREE.Vector3();
   for(let o of bullets){
     o.translateZ(flyspeed * (-dt));
+    let pos = o.position.clone();
+    let dir = o.getWorldDirection(new THREE.Vector3());
+    dir.negate();
+    bulletRay.set( pos, dir );
+    let intersect = bulletRay.intersectObjects( getShootables() );
+    if(intersect.length > 0){
+      if(intersect[0].distance < 1)
+        {
+          let rand = newPosOnRange();
+          scene.getObjectById(intersect[0].object.id).position.set(rand.x, rand.y, rand.z)
+          bullets = bullets.filter((v)=>{
+            scene.remove(o)
+            return v != o;
+          })
+        }
+    }
   }
   
   if(bullets.length > 0){
+    const removalDist = 400; // on this dist, the ball will be removed
     var p = new THREE.Vector3();
     bullets[bullets.length-1].getWorldPosition(p);
     let dist = p.distanceTo(zer);
-    if(dist >= 200){
-      bullets.shift()
+    if(dist >= removalDist){
+      scene.remove(bullets.pop());
     }
   }
 }
@@ -163,7 +187,7 @@ mesh.add( sound );
   //_____CONTROLLER FUNCTIONS________________________________________
 function onStartR( event ){ 
   Right_trigger_active = true; //remove later on 
-  bullet = new THREE.Mesh( bulletGeom, bulletMat );
+  bullet = new THREE.Mesh( bulletGeom, new THREE.MeshPhongMaterial( { color: Math.random()*0xffffff } ) );
   shot = false;
   controller1.userData.selectPressed = true;
 }
