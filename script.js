@@ -134,7 +134,7 @@ let bullet = new THREE.Mesh( bulletGeom, bulletMat );
 let shot = true;
 
 function updateBullets(dt){
-  const flyspeed = 3;
+  const flyspeed = 30;
   let zer = new THREE.Vector3();
   for(let o of bullets){
     o.translateZ(flyspeed * (-dt));
@@ -143,15 +143,15 @@ function updateBullets(dt){
   if(bullets.length > 0){
     var p = new THREE.Vector3();
     bullets[bullets.length-1].getWorldPosition(p);
-    let dist = p.distanceTo(zer)
+    let dist = p.distanceTo(zer);
     if(dist >= 200){
-      console.log("POOP: "+ bullets.shift())
+      bullets.shift()
     }
   }
 }
 
 //___________SPEAKER SPHERE_____________
-const sphere = new THREE.SphereGeometry( 1, 32, 16 );
+const sphere = new THREE.SphereGeometry( .03, 32, 16 );
 const material = new THREE.MeshPhongMaterial( { color: 0xff2200 } );
 const mesh = new THREE.Mesh( sphere, material );
 scene.add( mesh );
