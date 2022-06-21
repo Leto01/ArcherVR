@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-import { GLTFLoader } from 'GLTFLoader';
-import { OBJLoader } from 'OBJLoader'
+import {FontLoader} from 'FontLoader';
+import {TextGeometry} from 'TextGeometry';
 //Path
 //const pathToBowGLTF = "./models/bow.glb";
 const skyBoxPtahs = [ "./SkyBoxImages/stormydays_ft.png",
@@ -84,15 +84,18 @@ wall4.position.set(0, heightOfWall/2,  lengthOfRange/2);
 
 //creating a few hayBales and adding them into scene
 const hayBale1 = new THREE.Mesh( hayBaleGeometry, hayMaterial );
-hayBale1.position.set(12, heightOfHayBale,  30);
+hayBale1.position.set(12, heightOfHayBale/2,  30);
 const hayBale2 = new THREE.Mesh( hayBaleGeometry, hayMaterial );
-hayBale2.position.set(1, heightOfHayBale,  9);
+hayBale2.position.set(1, heightOfHayBale/2,  9);
 const hayBale3 = new THREE.Mesh( hayBaleGeometry, hayMaterial );
-hayBale3.position.set(-3, heightOfHayBale,  8);
+hayBale3.position.set(-3, heightOfHayBale/2,  8);
 const hayBale4 = new THREE.Mesh( hayBaleGeometry, hayMaterial );
-hayBale4.position.set(-23, heightOfHayBale,  -4);
+hayBale4.position.set(-23, heightOfHayBale/2,  -4);
 const hayBale5 = new THREE.Mesh( hayBaleGeometry, hayMaterial );
-hayBale5.position.set(2, heightOfHayBale,  9);
+hayBale5.position.set(2, heightOfHayBale/2,  9);
+
+const loader = new FontLoader();
+
 
 
 //tut aktuell inchts sichtbares.
@@ -104,6 +107,8 @@ hayBale5.castShadow = true;
 
 const collidableObjects = [];
 const shootables = [];
+
+let sceneText;
 
 export function addWorldIntoScene (scene){
     //for adding in the BOW-Model
@@ -134,6 +139,25 @@ export function addWorldIntoScene (scene){
     scene.add(hayBale3);
     scene.add(hayBale4);
     scene.add(hayBale5);
+
+    loader.load( 'fonts/font.json', function ( font ) {
+      const textGeom = new TextGeometry( 'ARCHER', {
+        font: font,
+        size: 3,
+        height: 5,
+        curveSegments: 12,
+      } );
+      const textMesh = new THREE.Mesh(textGeom, [
+        new THREE.MeshPhongMaterial({color: 0xad4000}),
+        new THREE.MeshPhongMaterial({color: 0x5c2301})
+      ])
+    
+      textMesh.castShadow = true;
+      textMesh.position.setX(-10)
+      textMesh.position.setY(12)
+      textMesh.position.setZ(-50)
+      scene.add(textMesh)
+    } );
    
     //__________ADDING IN OBJ WHICH I CAN COLLIDE WITH______________
     collidableObjects.push(wall1);

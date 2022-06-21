@@ -128,7 +128,7 @@ function render() {
 function newPosOnRange(){
   let x = (Math.random()*48)-24;
   let z = (Math.random()*98)-49;
-  let y = 0;
+  let y = .35;
   return new Vector3(x, y, z);
 }
 
