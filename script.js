@@ -3,7 +3,7 @@ import { addWorldIntoScene, getCollidables, getShootables } from './buildWorld.j
 import { VRButton } from 'VRButton';
 import { XRControllerModelFactory } from 'XRControllerModelFactory';
 import { OrbitControls } from 'OrbitControls';
-import { Vector3 } from 'three';
+import { Matrix3, Vector3 } from 'three';
 
 //scene design vars: -------------------------x
 const widthofRange = 50; //Shootingrange size 
@@ -140,11 +140,15 @@ let shot = true;
 
 const bulletRay = new THREE.Raycaster();
 
+function rotateBulletDown(bul){
+  
+}
+
 function updateBullets(dt){
   const flyspeed = 30;
   let zer = new THREE.Vector3();
   for(let o of bullets){
-    o.translateZ(flyspeed * (-dt));
+    o.translateZ(o.userData.speed * (-dt));
     let pos = o.position.clone();
     let dir = o.getWorldDirection(new THREE.Vector3());
     dir.negate();
@@ -153,6 +157,7 @@ function updateBullets(dt){
     if(intersect.length > 0){
       if(intersect[0].distance < 1)
         {
+          //New Position of HayBales after Bullet hit
           let rand = newPosOnRange();
           scene.getObjectById(intersect[0].object.id).position.set(rand.x, rand.y, rand.z)
           bullets = bullets.filter((v)=>{
@@ -183,17 +188,19 @@ mesh.position.set(40,20,-15);
 // finally add the sound to the mesh
 mesh.add( sound );
 
-
   //_____CONTROLLER FUNCTIONS________________________________________
 function onStartR( event ){ 
-  Right_trigger_active = true; //remove later on 
-  bullet = new THREE.Mesh( bulletGeom, new THREE.MeshPhongMaterial( { color: Math.random()*0xffffff } ) );
-  shot = false;
+  Right_trigger_active = true;
+  if(left_trigger_active){
+    bullet = new THREE.Mesh( bulletGeom, new THREE.MeshPhongMaterial( { color: Math.random()*0xffffff } ) );
+    shot = false;
+  }
   controller1.userData.selectPressed = true;
 }
   
 function onEndR(){ 
-  Right_trigger_active = false;  //remove later on 
+  Right_trigger_active = false; 
+  if(left_trigger_active)releaseProjectile();
   controller1.userData.selectPressed = false;
 }
 
@@ -207,11 +214,29 @@ function onEndL(){
   controller2.userData.selectPressed = false;
 }
 
+function releaseProjectile(){
+  if(!shot){
+    scene.add(bullet);
+    //position of right hand and with that the end of the bow string
+    let pos = controllerGrip1.getWorldPosition(new THREE.Vector3());
+    let bowhandle = controllerGrip2.getWorldPosition(new THREE.Vector3);
+
+    bullet.userData.speed = pos.distanceTo(bowhandle)*20;
+
+    bullet.position.add(pos);
+    let rotMatrix = new THREE.Matrix4().lookAt(pos, bowhandle, new THREE.Vector3())
+    bullet.quaternion.setFromRotationMatrix(rotMatrix);
+    bullets.unshift(bullet);
+    shot = true;
+    //test
+  }
+}
+
 function handleController( controller, dt ){
   const speed = 3.6;
   if(controller.userData.selectPressed){
-    //LEFT CONTROLLER FOR MOVING FORWARD
-    if(controller === controller2){
+    //RIGHT CONTROLLER FOR MOVING FORWARD
+    if(controller === controller1 && !controller2.userData.selectPressed){
       const minDistWall = 1;
       let pos = new THREE.Quaternion();
       let quat = new THREE.Quaternion();
@@ -233,20 +258,6 @@ function handleController( controller, dt ){
       if ( !blocked ) dolly.translateZ(-dt*speed);
       dolly.position.y = 0;
       dolly.quaternion.copy(quat);
-    }
-    
-    //_____RIGHT CONTROLLER FOR SHOOTING STUFF_____
-    if(controller === controller1){
-      if(!shot){
-        scene.add(bullet);
-        let pos = controllerGrip1.getWorldPosition(new THREE.Vector3());
-        bullet.position.add(pos);
-        bullet.quaternion.copy(controllerGrip1.getWorldQuaternion(new THREE.Quaternion))
-        bullet.rotateX(-45);
-        bullets.unshift(bullet);
-        shot = true;
-        //test
-      }
     }
   }
 }

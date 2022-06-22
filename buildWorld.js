@@ -111,19 +111,6 @@ const shootables = [];
 let sceneText;
 
 export function addWorldIntoScene (scene){
-    //for adding in the BOW-Model
-    // loader.load(pathToBowGLTF, function (gltf) {
-    //     gltf.scene.position.set(2, .2, -3);
-      
-    //     gltf.scene.traverse((o) => {
-    //       if (o.isMesh) o.material = woodMaterial;
-    //     });
-    //     let scale = 1;
-    //     gltf.scene.scale.set(scale, scale, scale);
-    //     scene.add(gltf.scene);
-    //   }, undefined, function (error){
-    //     console.error(error);
-    //   });
     scene.add( ambientLight );
     scene.add( light );
       
