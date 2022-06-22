@@ -141,7 +141,7 @@ let shot = true;
 const bulletRay = new THREE.Raycaster();
 
 function rotateBulletDown(bul){
-  
+
 }
 
 function updateBullets(dt){
@@ -180,7 +180,7 @@ function updateBullets(dt){
 }
 
 //___________SPEAKER SPHERE_____________
-const sphere = new THREE.SphereGeometry( .03, 32, 16 );
+const sphere = new THREE.SphereGeometry( 1, 32, 16 );
 const material = new THREE.MeshPhongMaterial( { color: 0xff2200 } );
 const mesh = new THREE.Mesh( sphere, material );
 scene.add( mesh );
