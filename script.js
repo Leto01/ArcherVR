@@ -219,12 +219,12 @@ function releaseProjectile(){
     scene.add(bullet);
     //position of right hand and with that the end of the bow string
     let pos = controllerGrip1.getWorldPosition(new THREE.Vector3());
-    let bowhandle = controllerGrip2.getWorldPosition(new THREE.Vector3);
+    let bowhandle = controllerGrip2.getWorldPosition(new THREE.Vector3());
 
-    bullet.userData.speed = pos.distanceTo(bowhandle)*20;
+    bullet.userData.speed = pos.distanceTo(bowhandle)*40;
 
     bullet.position.add(pos);
-    let rotMatrix = new THREE.Matrix4().lookAt(pos, bowhandle, new THREE.Vector3())
+    let rotMatrix = new THREE.Matrix4().lookAt(pos, bowhandle, new THREE.Vector3(0, 11, 0))
     bullet.quaternion.setFromRotationMatrix(rotMatrix);
     bullets.unshift(bullet);
     shot = true;
