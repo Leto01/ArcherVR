@@ -131,7 +131,7 @@ export function addWorldIntoScene (scene){
       const textGeom = new TextGeometry( 'ARCHER', {
         font: font,
         size: 3,
-        height: 5,
+        height: 2,
         curveSegments: 12,
       } );
       const textMesh = new THREE.Mesh(textGeom, [
@@ -141,7 +141,7 @@ export function addWorldIntoScene (scene){
     
       textMesh.castShadow = true;
       textMesh.position.setX(-10)
-      textMesh.position.setY(12)
+      textMesh.position.setY(15)
       textMesh.position.setZ(-50)
       scene.add(textMesh)
     } );

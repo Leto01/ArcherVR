@@ -4,7 +4,8 @@ import { VRButton } from 'VRButton';
 import { XRControllerModelFactory } from 'XRControllerModelFactory';
 import { OrbitControls } from 'OrbitControls';
 import { Matrix3, Vector3 } from 'three';
-
+import {FontLoader} from 'FontLoader';
+import {TextGeometry} from 'TextGeometry';
 //scene design vars: -------------------------x
 const widthofRange = 50; //Shootingrange size 
 const lengthOfRange = 100; //Shootingrange size
@@ -16,6 +17,9 @@ const scene = new THREE.Scene();
 //clock
 const clock = new THREE.Clock();
 
+//gameText 
+let textMesh;
+let kills = 0;
 
 //renderer settings
 const renderer = new THREE.WebGLRenderer({antialias: true});
@@ -110,6 +114,7 @@ window.addEventListener("resize", () => {
 })  
 
 addWorldIntoScene(scene);
+refresh();
 const collidables = getCollidables();
 //animation loop function
 function animate() {
@@ -140,10 +145,6 @@ let shot = true;
 
 const bulletRay = new THREE.Raycaster();
 
-function rotateBulletDown(bul){
-
-}
-
 function updateBullets(dt){
   const flyspeed = 30;
   let zer = new THREE.Vector3();
@@ -158,6 +159,8 @@ function updateBullets(dt){
       if(intersect[0].distance < 1)
         {
           //New Position of HayBales after Bullet hit
+          kills++;
+          refresh();
           let rand = newPosOnRange();
           scene.getObjectById(intersect[0].object.id).position.set(rand.x, rand.y, rand.z)
           bullets = bullets.filter((v)=>{
@@ -260,4 +263,28 @@ function handleController( controller, dt ){
       dolly.quaternion.copy(quat);
     }
   }
+}
+
+function createText() {
+  const loader = new FontLoader();
+  loader.load('./node_modules/three/examples/fonts/helvetiker_regular.typeface.json', function (font) {
+    let textGeo = new TextGeometry( 'Killcounter: ' + kills.toString(), {
+      font: font,
+      size: 3,
+      height: 2,
+      curveSegments: 24,
+    } );
+    textMesh = new THREE.Mesh(textGeo, new THREE.MeshStandardMaterial( { color: '#03ffff' } ));
+    textMesh.castShadow = true;
+    textMesh.position.setX(-10)
+    textMesh.position.setY(10.5)
+    textMesh.position.setZ(-50)
+    camera.add(textMesh);
+    scene.add(textMesh);
+  });
+}
+
+function refresh() {
+  if ( textMesh !== undefined ) scene.remove(textMesh);
+  createText();
 }
